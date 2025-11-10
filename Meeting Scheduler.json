@@ -1,0 +1,1957 @@
+{
+  "name": "Meeting Scheduler",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b4915010-fe3a-4539-8fcc-7fe40186919e",
+              "name": "eventId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "b32046e6-feed-489c-a94c-63a4200abcb2",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "d403e92c-549d-45fc-b124-964c93f84b39",
+              "name": "start",
+              "value": "={{ $json.start }}",
+              "type": "object"
+            },
+            {
+              "id": "bd8b7060-9f6b-4774-b225-deacef1c389b",
+              "name": "end",
+              "value": "={{ $json.end }}",
+              "type": "object"
+            },
+            {
+              "id": "7d651f78-a975-41ca-bff8-b52e26a2d5c0",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "3c90a528-c315-4a0a-85bc-7114b5f48280",
+              "name": "attendees",
+              "value": "={{ $json.attendees }}",
+              "type": "array"
+            },
+            {
+              "id": "d5688d22-58b4-4d8d-a449-43b2b5e6471a",
+              "name": "organizer",
+              "value": "={{ $json.organizer }}",
+              "type": "object"
+            },
+            {
+              "id": "28218f3c-de08-43f2-9d44-f5fa787aa7b0",
+              "name": "location",
+              "value": "={{ $json.location }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4064,
+        -1360
+      ],
+      "id": "0626d458-f742-47d3-a1c3-eb8df1a0b7d0",
+      "name": "Normalize Event Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6633aa08-14fe-4d24-be41-ac53b1f8e4e4",
+              "leftValue": "={{ $json.location }}",
+              "rightValue": "zoom",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "83c215f8-4e48-4f8d-8b62-b43c1399a0c7",
+              "leftValue": "={{ $json.location }}",
+              "rightValue": "online",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3568,
+        -1360
+      ],
+      "id": "6b4763fc-e950-443a-be06-863d7cb6efdf",
+      "name": "Check if Zoom is needed"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "topic": "={{ $json.summary }}",
+        "additionalFields": {
+          "agenda": "={{ $json.description }}",
+          "duration": "={{ $json.durationHours }}",
+          "startTime": "={{ $json.start.dateTime }}"
+        }
+      },
+      "type": "n8n-nodes-base.zoom",
+      "typeVersion": 1,
+      "position": [
+        -3088,
+        -1520
+      ],
+      "id": "35424aa1-60a3-4217-a162-0447e4c12f77",
+      "name": "Create a meeting",
+      "credentials": {
+        "zoomOAuth2Api": {
+          "id": "qRbzc9teAKtn1LMY",
+          "name": "Zoom account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0b6b7635-6605-4dbe-a7f6-3c1d80098753",
+              "name": "zoom_join_url",
+              "value": "={{ $json.join_url }}",
+              "type": "string"
+            },
+            {
+              "id": "e5783078-9aeb-4b5d-ac56-b77115237b43",
+              "name": "topic",
+              "value": "={{ $json.topic }}",
+              "type": "string"
+            },
+            {
+              "id": "761b5e2b-c55e-4911-82f3-bd5159a95ab4",
+              "name": "start",
+              "value": "={{ $('Normalize Event Data').item.json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "88d1c662-5642-429e-afd2-c29c854d3d3e",
+              "name": "end",
+              "value": "={{ $('Normalize Event Data').item.json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "805505b1-1bb4-4c45-a620-05b3eda59e0d",
+              "name": "attendeeList",
+              "value": "={{ $('Code in JavaScript1').item.json.attendeeList }}",
+              "type": "string"
+            },
+            {
+              "id": "1236a23b-695d-4fea-bd48-f3af9d4d2dd8",
+              "name": "password",
+              "value": "={{ $json.password }}",
+              "type": "string"
+            },
+            {
+              "id": "5d5c0f8c-6e66-470d-b2ff-4eb118f83ae2",
+              "name": "agenda",
+              "value": "={{ $json.agenda }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2832,
+        -1520
+      ],
+      "id": "4b65aae2-b929-4347-8702-1277d8f4a80d",
+      "name": "Add Zoom URL"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1EgV6G6LKS4C8Aorx2v2qyv8rK-ZTEhWaK2Wi72tZbOM",
+          "mode": "list",
+          "cachedResultName": "Copy of Meeting Agenda",
+          "cachedResultUrl": "https://docs.google.com/document/d/1EgV6G6LKS4C8Aorx2v2qyv8rK-ZTEhWaK2Wi72tZbOM/edit?usp=drivesdk"
+        },
+        "name": "= {{ $json.topic }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2576,
+        -1520
+      ],
+      "id": "048b4b88-d96d-4634-bb53-d3020f8f9056",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "N2qQ3VedBw23qFRW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1EgV6G6LKS4C8Aorx2v2qyv8rK-ZTEhWaK2Wi72tZbOM",
+          "mode": "list",
+          "cachedResultName": "Copy of Meeting Agenda",
+          "cachedResultUrl": "https://docs.google.com/document/d/1EgV6G6LKS4C8Aorx2v2qyv8rK-ZTEhWaK2Wi72tZbOM/edit?usp=drivesdk"
+        },
+        "name": "={{ $json.summary }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3088,
+        -1264
+      ],
+      "id": "bc558de2-b5ec-4c00-be30-1a86df514444",
+      "name": "Copy file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "N2qQ3VedBw23qFRW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const start = new Date(item.json.start.dateTime);\n  const end = new Date(item.json.end.dateTime);\n\n  // --- Calculate duration ---\n  const diffMs = end - start;\n  const diffMinutes = diffMs / (1000 * 60);\n  const diffHours = diffMinutes / 60;\n\n  // --- Get readable day ---\n  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };\n  const meetingDay = start.toLocaleDateString('en-US', options); \n\n  // --- Extract attendees ---\n  const attendees = (item.json.attendees || []).map(a => a.email);\n  const attendeesList = attendees.join(', '); // comma-separated for easy use in Docs or email\n\n  // --- Add all computed fields ---\n  item.json.durationMinutes = diffMinutes;\n  item.json.durationHours = parseFloat(diffHours.toFixed(2));\n  item.json.meetingDay = meetingDay;\n  item.json.attendeeEmails = attendees;\n  item.json.attendeeList = attendeesList;\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3744,
+        -1360
+      ],
+      "id": "44731632-73c4-41d4-8721-12274840cdfe",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Code in JavaScript1').item.json.attendeeList }}",
+        "subject": "={{ $('Code in JavaScript1').item.json.summary }}",
+        "message": "=<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Meeting Agenda</title>\n    <style>\n      body {\n        font-family: \"Segoe UI\", Arial, Helvetica, sans-serif;\n        line-height: 1.6;\n        color: #333333;\n        background-color: #f9f9fb;\n        margin: 0;\n        padding: 0;\n      }\n      .container {\n        max-width: 600px;\n        margin: 40px auto;\n        background-color: #ffffff;\n        padding: 24px 32px;\n        border-radius: 10px;\n        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);\n      }\n      h2 {\n        color: #0078d7;\n        font-weight: 600;\n        margin-top: 0;\n      }\n      p {\n        margin: 12px 0;\n      }\n      a {\n        color: #0078d7;\n        text-decoration: none;\n      }\n      a:hover {\n        text-decoration: underline;\n      }\n      .footer {\n        margin-top: 24px;\n        font-size: 14px;\n        color: #555555;\n      }\n    </style>\n  </head>\n  <body>\n    <div class=\"container\">\n      <h2>Meeting Agenda</h2>\n      <p>Hi team,</p>\n      <p>Here’s the agenda for our upcoming meeting.</p>\n\n      <p>\n        📅 <b>When:</b> \n        {{ $('Code in JavaScript1').item.json.meetingDay }};\n        {{ DateTime.fromISO($('Code in JavaScript1').item.json.start.dateTime).toFormat('HH:mm') }}\n      </p>\n\n      <p>\n        🔗 <b>Zoom:</b> \n        <a href=\"{{ $('Add Zoom URL').item.json.zoom_join_url }}\">\n          Join Meeting\n        </a>\n      </p>\n\n      <p>\n        🗒️ <b>Agenda:</b> \n        <a href=\"https://docs.google.com/document/d/{{ $('Creates the Agenda').item.json.documentId }}\">\n          View Document\n        </a>\n      </p>\n\n      <p class=\"footer\">\n        Thanks,<br>\n        <strong>Your Meetings Automation Bot</strong>\n      </p>\n    </div>\n  </body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1968,
+        -1520
+      ],
+      "id": "4ef9edd2-ee82-4447-b243-87e859aec33b",
+      "name": "Send a message",
+      "webhookId": "92cbb211-e715-452a-9bef-afbdf1df5822",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "e5ZdQt0xKEobJUvv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2400,
+        -1264
+      ],
+      "id": "719705b5-1640-4534-888a-dda8bfd72692",
+      "name": "Share file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "N2qQ3VedBw23qFRW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Code in JavaScript1').item.json.attendeeList }}",
+        "subject": "={{ $('Code in JavaScript1').item.json.summary }}",
+        "message": "=<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Meeting Agenda</title>\n    <style>\n      body {\n        font-family: \"Segoe UI\", Arial, Helvetica, sans-serif;\n        line-height: 1.6;\n        color: #333333;\n        background-color: #f8f9fb;\n        margin: 0;\n        padding: 0;\n      }\n      .container {\n        max-width: 600px;\n        margin: 40px auto;\n        background-color: #ffffff;\n        padding: 24px 32px;\n        border-radius: 10px;\n        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);\n      }\n      h2 {\n        color: #0078d7;\n        font-weight: 600;\n        margin-top: 0;\n      }\n      p {\n        margin: 12px 0;\n      }\n      a {\n        color: #0078d7;\n        text-decoration: none;\n      }\n      a:hover {\n        text-decoration: underline;\n      }\n      .footer {\n        margin-top: 24px;\n        font-size: 14px;\n        color: #555555;\n      }\n    </style>\n  </head>\n  <body>\n    <div class=\"container\">\n      <h2>Meeting Agenda</h2>\n\n      <p>Hi team,</p>\n\n      <p>Here’s the agenda for our upcoming meeting.</p>\n\n      <p>\n        📅 <b>When:</b> \n        {{ $('Code in JavaScript1').item.json.meetingDay }};\n        {{ DateTime.fromISO($('Code in JavaScript1').item.json.start.dateTime).toFormat('HH:mm') }}\n      </p>\n\n      <p>\n        🔗 <b>Location:</b> \n        {{ $('Code in JavaScript1').item.json.location }}\n      </p>\n\n      <p>\n        🗒️ <b>Agenda:</b> \n        <a href=\"https://docs.google.com/document/d/{{ $('Creates the agenda').item.json.documentId }}\">\n          View Document\n        </a>\n      </p>\n\n      <p class=\"footer\">\n        Thanks,<br>\n        <strong>Your Meetings Automation Bot</strong>\n      </p>\n    </div>\n  </body>\n</html>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1968,
+        -1264
+      ],
+      "id": "fff080ca-60c1-4c6c-9946-aa8ad3ae1087",
+      "name": "Send a message1",
+      "webhookId": "92cbb211-e715-452a-9bef-afbdf1df5822",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "e5ZdQt0xKEobJUvv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4",
+          "mode": "list",
+          "cachedResultName": "2025 Scheduled Meetings ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "eventId": "={{ $('Code in JavaScript1').item.json.eventId }}",
+            "title": "={{ $('Code in JavaScript1').item.json.summary }}",
+            "location": "={{ $('Code in JavaScript1').item.json.location }}",
+            "date": "={{ $('Code in JavaScript1').item.json.meetingDay }}",
+            "zoom_link": "={{ $('Add Zoom URL').item.json.zoom_join_url }}",
+            "Status": "={{ $('Meeting Scheduled').item.json.status }}",
+            "Meetings agenda": "={{ $('Code in JavaScript1').item.json.description }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "eventId",
+              "displayName": "eventId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "zoom_link",
+              "displayName": "zoom_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meetings agenda",
+              "displayName": "Meetings agenda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1648,
+        -1520
+      ],
+      "id": "46607b7b-26c8-4f4b-887a-0e683503c9e3",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UR7FBVyU3lwhYgGQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "calendarId": {
+          "__rl": true,
+          "value": "nnamanisolomonblessing@gmail.com",
+          "mode": "list",
+          "cachedResultName": "nnamanisolomonblessing@gmail.com"
+        },
+        "triggerOn": "eventCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTrigger",
+      "typeVersion": 1,
+      "position": [
+        -5024,
+        -1360
+      ],
+      "id": "18b6bb7f-08cf-46d4-94e0-75310618a1f0",
+      "name": "Meeting Scheduled",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Th7XCCGetFelnUUU",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4",
+          "mode": "list",
+          "cachedResultName": "2025 Scheduled Meetings ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Zoom Meetings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "eventId": "={{ $('Code in JavaScript1').item.json.eventId }}",
+            "title": "={{ $('Code in JavaScript1').item.json.summary }}",
+            "date": "={{ $('Code in JavaScript1').item.json.meetingDay }}",
+            "location": "={{ $('Code in JavaScript1').item.json.location }}",
+            "Status": "={{ $('Limit').item.json.status }}",
+            "Meetings agenda": "={{ $('Code in JavaScript1').item.json.description }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "eventId",
+              "displayName": "eventId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zoom_link",
+              "displayName": "zoom_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meetings agenda",
+              "displayName": "Meetings agenda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1632,
+        -1264
+      ],
+      "id": "e7814ae7-c9c6-4f7c-8dc5-bb4113bdea38",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UR7FBVyU3lwhYgGQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -4384,
+        -1360
+      ],
+      "id": "748227b3-687d-4d94-aae6-303086c356f1",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "nnamanisolomonblessing@gmail.com",
+          "mode": "list",
+          "cachedResultName": "nnamanisolomonblessing@gmail.com"
+        },
+        "timeMax": "={{ $now.plus({ week: 4 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -4672,
+        -1360
+      ],
+      "id": "13099419-c3bd-45a3-867c-c72cc3773b34",
+      "name": "Get many events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Th7XCCGetFelnUUU",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -5008,
+        -848
+      ],
+      "id": "07fedf1d-be0a-4756-a0a9-86429678f523",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "nnamanisolomonblessing@gmail.com",
+          "mode": "list",
+          "cachedResultName": "nnamanisolomonblessing@gmail.com"
+        },
+        "timeMin": "={{ $now.minus({ weeks: 4 }) }}",
+        "timeMax": "={{ $now }}",
+        "options": {
+          "showDeleted": false
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -4544,
+        -848
+      ],
+      "id": "683e3478-af39-4220-9d91-5095a185c79f",
+      "name": "Get many events1",
+      "executeOnce": false,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Th7XCCGetFelnUUU",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "nnamanisolomonblessing@gmail.com",
+          "mode": "list",
+          "cachedResultName": "nnamanisolomonblessing@gmail.com"
+        },
+        "eventId": "={{ $json.id }}",
+        "options": {
+          "sendUpdates": "all"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -3408,
+        -880
+      ],
+      "id": "944ee76e-88b4-4507-ad30-1b9c7a823c4a",
+      "name": "Delete an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Th7XCCGetFelnUUU",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2da55039-d307-45da-9e34-3f07bf27bef8",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $('Get row(s)').item.json.calendar_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4128,
+        -848
+      ],
+      "id": "e039740f-f2e1-4410-908c-9df34237467a",
+      "name": "If",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -3840,
+        -864
+      ],
+      "id": "189fdf4f-2138-479a-82a4-39218e72dfdb",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        -3568,
+        -736
+      ],
+      "id": "cb67fc7d-b9db-47c0-bd5b-c12954dada16"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -4320,
+        -848
+      ],
+      "id": "b8f1f3df-2925-41bd-8931-353bcfce9ce6",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me1",
+      "typeVersion": 1,
+      "position": [
+        -4160,
+        -656
+      ],
+      "id": "24c5cef8-1058-47b8-b5ba-d486dd72228e"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{Topic}}",
+              "replaceText": "={{ $('Add Zoom URL').item.json.topic }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{Attendees}}",
+              "replaceText": "={{ $('Add Zoom URL').item.json.attendeeList }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{Date}}",
+              "replaceText": "={{ $('Code in JavaScript1').item.json.meetingDay }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{start time}}",
+              "replaceText": "={{ DateTime.fromISO($('Add Zoom URL').item.json.start).toFormat('HH:mm') }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{location}}",
+              "replaceText": "={{ $('Code in JavaScript1').item.json.location }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{zoom link}}",
+              "replaceText": "={{ $('Add Zoom URL').item.json.zoom_join_url }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{description}}",
+              "replaceText": "={{ $('Add Zoom URL').item.json.agenda }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2368,
+        -1520
+      ],
+      "id": "098f6869-136b-416f-9a6f-d452c8625aae",
+      "name": "Creates the Agenda",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "izFCBTuFVgEd33Hd",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{Topic}}",
+              "replaceText": "={{ $('Check if Zoom is needed').item.json.summary }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{Attendees}}",
+              "replaceText": "={{ $('Code in JavaScript1').item.json.attendeeList }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{Date}}",
+              "replaceText": "={{ $('Code in JavaScript1').item.json.meetingDay }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{start time}}",
+              "replaceText": "={{ DateTime.fromISO($('Code in JavaScript1').item.json.start.dateTime).toFormat('HH:mm') }}\n"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{location}}",
+              "replaceText": "={{ $('Code in JavaScript1').item.json.location }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{zoom link}}",
+              "replaceText": "="
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{description}}",
+              "replaceText": "={{ $('Code in JavaScript1').item.json.description }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2672,
+        -1264
+      ],
+      "id": "50b49649-0bd4-486f-b255-19496072915f",
+      "name": "Creates the agenda",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "izFCBTuFVgEd33Hd",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.documentId }}",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "reader",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2160,
+        -1520
+      ],
+      "id": "66568243-1ab2-45b9-9623-8a8991da1bcd",
+      "name": "Share the agenda file link",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "N2qQ3VedBw23qFRW",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        -1376
+      ],
+      "id": "4a23e86b-c5c2-41e0-965d-3c1b7c93df66",
+      "name": "End"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -3920,
+        -1616
+      ],
+      "id": "e02f37d6-58ce-4b9f-a50b-f75237fa0976",
+      "name": "Stop"
+    },
+    {
+      "parameters": {
+        "content": "## Online Meeting Scheduling:\n\nThe Zoom meeting Link is generated and Agenda Documents are generated . This is then sent to the invited parties through email",
+        "height": 288,
+        "width": 1648
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3120,
+        -1664
+      ],
+      "typeVersion": 1,
+      "id": "cce1545d-42de-40f3-9ddc-494e126b5e2b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Physical Meeting Scheduling:\n\nAgenda Documents are generated . This is then sent to the invited parties through email",
+        "height": 288,
+        "width": 1648
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3120,
+        -1360
+      ],
+      "typeVersion": 1,
+      "id": "85a4daac-c845-4ad9-bbe8-bfc3f5776a2c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Event ID storing\nThe calendar IDs are stored for future referencing such as calendar monthly event deletion",
+        "height": 288,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4288,
+        -1728
+      ],
+      "typeVersion": 1,
+      "id": "7cb8dd06-24c0-41d6-85b1-5a4d37c5909a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Deleting Previous Month Schedule\nData Table was used to comapare stored records and  the schedules fetched",
+        "height": 272,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5200,
+        -944
+      ],
+      "typeVersion": 1,
+      "id": "2d48cfb8-9c8a-46bb-9905-8b83714e0b26",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "nnamanisolomonblessing@gmail.com",
+          "mode": "list",
+          "cachedResultName": "nnamanisolomonblessing@gmail.com"
+        },
+        "returnAll": true,
+        "timeMax": "={{ $now.plus({ week: 4 }) }}",
+        "options": {
+          "showDeleted": true
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -2448,
+        -896
+      ],
+      "id": "b9da23fb-28fe-4cf6-b192-31fe9e49237c",
+      "name": "Get many events2",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Th7XCCGetFelnUUU",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "53ff926f-5ccc-40dc-a099-0182034828b1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "cancelled",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2224,
+        -896
+      ],
+      "id": "acfbab95-df2c-4b37-a6e3-ca47f8098f52",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Code in JavaScript').item.json.attendeeList }}",
+        "subject": "={{ $('Code in JavaScript').item.json.summary }}",
+        "message": "=<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Meeting Cancellation Notice</title>\n    <style>\n      body {\n        font-family: Arial, Helvetica, sans-serif;\n        line-height: 1.6;\n        color: #333333;\n        margin: 0;\n        padding: 0;\n        background-color: #f8f9fa;\n      }\n      .container {\n        max-width: 600px;\n        margin: 40px auto;\n        background: #ffffff;\n        padding: 24px 32px;\n        border-radius: 8px;\n        box-shadow: 0 2px 6px rgba(0,0,0,0.1);\n      }\n      h2 {\n        color: #d9534f;\n        font-weight: 600;\n        margin-top: 0;\n      }\n      p {\n        margin: 12px 0;\n      }\n      .footer {\n        margin-top: 24px;\n        font-size: 13px;\n        color: #777777;\n      }\n    </style>\n  </head>\n  <body>\n    <div class=\"container\">\n      <h2>Meeting Cancelled</h2>\n      <p>Hello,</p>\n      <p>\n        We wanted to let you know that the scheduled meeting\n        <strong>\"{{ $json[\"summary\"] }}\"</strong>\n        originally planned for\n        <strong>{{ DateTime.fromISO($('Code in JavaScript').item.json.start.dateTime).toFormat('HH:mm') }}</strong>\n        has been <strong>cancelled</strong>.\n      </p>\n      <p>\n        Please disregard any previous invites or agenda documents for this session.\n      </p>\n      <p>\n        If needed, a new meeting will be scheduled and you will receive an updated invitation.\n      </p>\n      <p>\n        Thank you for your understanding.\n      </p>\n      <p class=\"footer\">\n        Best regards,<br>\n        <strong>The Meetings Team</strong>\n      </p>\n    </div>\n  </body>\n</html>\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1168,
+        -912
+      ],
+      "id": "52902764-5d02-4c2e-b4c8-0f0f3e4277c4",
+      "name": "Send a message2",
+      "webhookId": "92cbb211-e715-452a-9bef-afbdf1df5822",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "e5ZdQt0xKEobJUvv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        -64
+      ],
+      "id": "2d720759-71b5-4416-99d7-912bdeb02287",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "## Meeting Cancellation \nSend email and Update Google Sheets for Documentation",
+        "height": 288,
+        "width": 2656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2864,
+        -992
+      ],
+      "typeVersion": 1,
+      "id": "450f1a87-f311-456f-bf27-89c2f0d35933",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const start = new Date(item.json.start.dateTime);\n  const end = new Date(item.json.end.dateTime);\n\n  // --- Calculate duration ---\n  const diffMs = end - start;\n  const diffMinutes = diffMs / (1000 * 60);\n  const diffHours = diffMinutes / 60;\n\n  // --- Get readable day ---\n  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };\n  const meetingDay = start.toLocaleDateString('en-US', options); \n\n  // --- Extract attendees ---\n  const attendees = (item.json.attendees || []).map(a => a.email);\n  const attendeesList = attendees.join(', '); // comma-separated for easy use in Docs or email\n\n  // --- Add all computed fields ---\n  item.json.durationMinutes = diffMinutes;\n  item.json.durationHours = parseFloat(diffHours.toFixed(2));\n  item.json.meetingDay = meetingDay;\n  item.json.attendeeEmails = attendees;\n  item.json.attendeeList = attendeesList;\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1712,
+        -912
+      ],
+      "id": "27553764-9999-4137-b636-9dc3dbfc0c39",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "5qNzwKe3XikV3HXr",
+          "mode": "list",
+          "cachedResultName": "ID",
+          "cachedResultUrl": "/projects/fjaF6pTbz4hfqClv/datatables/5qNzwKe3XikV3HXr"
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        -912
+      ],
+      "id": "dd25c23d-11f0-40f5-b4c6-6fa335b4c890",
+      "name": "Get row(s)1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e8d1c137-fcba-4488-b184-2f99eb962f76",
+              "leftValue": "={{ $json.calendar_id }}",
+              "rightValue": "={{ $('Code in JavaScript').item.json.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -672,
+        -912
+      ],
+      "id": "4fd2f74f-b80a-45fa-b9ba-cd6340f7e352",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        -912
+      ],
+      "id": "74da5b4e-6525-4781-b2b8-5f2a9b7155b6",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "calendarId": {
+          "__rl": true,
+          "value": "nnamanisolomonblessing@gmail.com",
+          "mode": "list",
+          "cachedResultName": "nnamanisolomonblessing@gmail.com"
+        },
+        "triggerOn": "eventCancelled",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2688,
+        -896
+      ],
+      "id": "8c99e53f-4803-4b9e-b05e-262113ceec3f",
+      "name": "Google Calendar Trigger",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "Th7XCCGetFelnUUU",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "5qNzwKe3XikV3HXr",
+          "mode": "list",
+          "cachedResultName": "ID",
+          "cachedResultUrl": "/projects/fjaF6pTbz4hfqClv/datatables/5qNzwKe3XikV3HXr"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "0"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "calendar_id": "={{ $json.id }}"
+          },
+          "matchingColumns": [
+            "calendar_id"
+          ],
+          "schema": [
+            {
+              "id": "calendar_id",
+              "displayName": "calendar_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -4128,
+        -1616
+      ],
+      "id": "f0397d57-7044-4c47-a7b1-488041357f76",
+      "name": "Upsert row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "5qNzwKe3XikV3HXr",
+          "mode": "list",
+          "cachedResultName": "ID",
+          "cachedResultUrl": "/projects/fjaF6pTbz4hfqClv/datatables/5qNzwKe3XikV3HXr"
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        -4752,
+        -848
+      ],
+      "id": "5c2b0091-8cc8-4e54-8f01-1a93f3bc3bb3",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4",
+          "mode": "list",
+          "cachedResultName": "2025 Scheduled Meetings ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Zoom Meetings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DVf0BCeKpoTgGTcG-Jb-jhevyx8yaN3PV_QOtZz1gq4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "eventId": "={{ $json.calendar_id }}",
+            "Status": "={{ $('Edit Fields').item.json.status }}"
+          },
+          "matchingColumns": [
+            "eventId"
+          ],
+          "schema": [
+            {
+              "id": "eventId",
+              "displayName": "eventId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zoom_link",
+              "displayName": "zoom_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zoom meetings agenda",
+              "displayName": "zoom meetings agenda",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -432,
+        -928
+      ],
+      "id": "f4fd7270-85b4-48f6-a724-4712b0e2f8ca",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UR7FBVyU3lwhYgGQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fc97c88b-5219-4c68-900e-f210f215bfc5",
+              "name": "eventid",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "eec13c83-2823-423f-9015-dc7307ea701a",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "82841c4f-c24d-42ff-a8ba-2e1332bf99a3",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1456,
+        -912
+      ],
+      "id": "aa156e17-62c8-42dd-a4e1-c66602469620",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Normalize Event Data": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Zoom is needed": {
+      "main": [
+        [
+          {
+            "node": "Create a meeting",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Copy file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a meeting": {
+      "main": [
+        [
+          {
+            "node": "Add Zoom URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Zoom URL": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Creates the Agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file1": {
+      "main": [
+        [
+          {
+            "node": "Creates the agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Check if Zoom is needed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meeting Scheduled": {
+      "main": [
+        [
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Normalize Event Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upsert row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete an event": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Delete an event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creates the Agenda": {
+      "main": [
+        [
+          {
+            "node": "Share the agenda file link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creates the agenda": {
+      "main": [
+        [
+          {
+            "node": "Share file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share the agenda file link": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many events2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert row(s)": {
+      "main": [
+        [
+          {
+            "node": "Stop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s)": {
+      "main": [
+        [
+          {
+            "node": "Get many events1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6ca97caf-27a4-416e-b2f0-c771905cab34",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "42d5f14696b1283d7f2183f580d81824d6ae4cc966ced966940eaca716708176"
+  },
+  "id": "ZmgDdWZAWrXa7hNV",
+  "tags": []
+}
