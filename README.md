@@ -5,6 +5,9 @@ The **Meeting Scheduler** is a fully automated system built with **n8n** to mana
 
 It automatically schedules meetings, generates **Zoom links for online sessions**, emails participants with agendas, and keeps all records updated in a **Google Sheet**. It also intelligently handles cancellations and monthly cleanup to maintain an organized calendar.
 
+![Meeting Scheduler](https://github.com/user-attachments/assets/8d93e2b4-5feb-414e-9a2d-2cc0e35f4a01)
+
+
 ---
 
 ## 🌐 Overview
